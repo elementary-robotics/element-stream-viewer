@@ -1,0 +1,62 @@
+version: "3.2"
+
+services:
+
+  nucleus:
+    image: elementaryrobotics/nucleus
+    volumes:
+      - type: volume
+        source: shared
+        target: /shared
+        volume:
+          nocopy: true
+    command: ./launch.sh
+
+  realsense:
+    image: elementaryrobotics/element-realsense
+    volumes:
+      - type: volume
+        source: shared
+        target: /shared
+        volume:
+          nocopy: true
+    depends_on:
+      - "nucleus"
+    privileged: true
+
+  segmentation:
+    image: elementaryrobotics/element-segmentation
+    volumes:
+      - type: volume
+        source: shared
+        target: /shared
+        volume:
+          nocopy: true
+    depends_on:
+      - "nucleus"
+      - "realsense"
+
+  inspect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: volume
+        source: shared
+        target: /shared
+        volume:
+          nocopy: true
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+      - "/home/dat/Workspace/element-inspect:/development"
+    environment:
+      - "DISPLAY"
+      - "QT_X11_NO_MITSHM=1"  
+    depends_on:
+      - "nucleus"
+    command: tail -f /dev/null
+
+volumes:
+  shared:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
