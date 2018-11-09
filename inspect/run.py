@@ -14,6 +14,7 @@ LOGO_PATH = "assets/logo.png"
 element = Element("inspect")
 stream = ""
 
+
 class StreamThread(QThread):
     change_pixmap = pyqtSignal(QImage)
     max_fps = 30
@@ -42,6 +43,15 @@ class StreamThread(QThread):
             last_set = time.time()
 
 
+class ComboBoxThread(QThread):
+    update_streams = pyqtSignal()
+
+    def run(self):
+        while True:
+            self.update_streams.emit()
+            time.sleep(1)
+
+
 class Inspect(QMainWindow):
 
     def __init__(self):
@@ -67,9 +77,13 @@ class Inspect(QMainWindow):
         self.stream_selector.currentIndexChanged.connect(self.select_stream)
         toolbar.addWidget(self.stream_selector)
 
-        t = StreamThread(self)
-        t.change_pixmap.connect(self.set_img)
-        t.start()
+        stream_thread = StreamThread(self)
+        stream_thread.change_pixmap.connect(self.set_img)
+        stream_thread.start()
+
+        cb_thread = ComboBoxThread(self)
+        cb_thread.update_streams.connect(self.update_streams)
+        cb_thread.start()
 
         self.show()
 
@@ -79,6 +93,20 @@ class Inspect(QMainWindow):
             stream = ""
         else:
             stream = self.streams[i]
+
+    @pyqtSlot()
+    def update_streams(self):
+        updated_streams = ["select a stream"]+ sorted(element.get_all_streams())
+        if updated_streams != self.streams:
+            self.streams = updated_streams
+            current_stream = self.stream_selector.currentText()
+            self.stream_selector.clear()
+            self.stream_selector.addItems(self.streams)
+            try:
+                current_index = self.streams.index(current_stream)
+                self.stream_selector.setCurrentIndex(current_index)
+            except ValueError:
+                self.stream_selector.setCurrentIndex(0)
 
     @pyqtSlot(QImage)
     def set_img(self, qimg):

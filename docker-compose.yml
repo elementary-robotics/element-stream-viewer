@@ -47,13 +47,11 @@ services:
         volume:
           nocopy: true
       - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
-      - "/home/dat/Workspace/element-inspect:/development"
     environment:
       - "DISPLAY"
       - "QT_X11_NO_MITSHM=1"  
     depends_on:
       - "nucleus"
-    command: tail -f /dev/null
 
 volumes:
   shared:
