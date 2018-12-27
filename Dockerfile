@@ -1,7 +1,8 @@
-FROM elementaryrobotics/element-segmentation-base:ed62eff7f4fa3dbb3aa4cb80a7950dac1d42bb52
+FROM elementaryrobotics/atom
 
-# Want to copy over the contents of this repo to the code
-#	section so that we have the source
+RUN apt update
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata libopencv-dev
+
 ADD . /code
 
 #

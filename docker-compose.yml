@@ -12,30 +12,6 @@ services:
           nocopy: true
     command: ./launch.sh
 
-  realsense:
-    image: elementaryrobotics/element-realsense
-    volumes:
-      - type: volume
-        source: shared
-        target: /shared
-        volume:
-          nocopy: true
-    depends_on:
-      - "nucleus"
-    privileged: true
-
-  segmentation:
-    image: elementaryrobotics/element-segmentation
-    volumes:
-      - type: volume
-        source: shared
-        target: /shared
-        volume:
-          nocopy: true
-    depends_on:
-      - "nucleus"
-      - "realsense"
-
   inspect:
     build:
       context: .

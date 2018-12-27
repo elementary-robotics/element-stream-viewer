@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import time
 from atom import Element
+from atom.messages import LogLevel
 from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QLabel, QMainWindow, QToolBar
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImage
@@ -16,6 +17,7 @@ stream = ""
 
 class StreamThread(QThread):
     change_pixmap = pyqtSignal(QImage)
+    max_size = 8192
     hz = 30
 
     def run(self):
@@ -32,11 +34,17 @@ class StreamThread(QThread):
                     # Format binary data to be an image readable by pyqt
                     data = data[0]["data"]
                     img = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), -1)
+                    for size in img.shape:
+                        if size > self.max_size:
+                            error_msg = "Selected stream has image too large to display!"
+                            element.log(LogLevel.ERR, error_msg)
+                            raise Exception(error_msg)
                     if len(img.shape) == 3:
                         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     if img.dtype != np.uint8:
                         img = (img / img.max() * 255).astype(np.uint8)
-                except:
+                except Exception as e:
+                    element.log(LogLevel.ERR, str(e))
                     img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
             else:
                 img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
