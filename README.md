@@ -2,6 +2,8 @@
 The inspect element is a GUI tool used for viewing image data that is written to a stream. 
 It works with the realsense element's color and depth streams and is a useful tool for testing and debugging computer vision algorithms. 
 
+![Inspect screenshot](assets/inspect_screenshot.png)
+
 
 ### Usage
 Since this element utilizes a GUI, we need to forward the display between Docker and the host machine.
