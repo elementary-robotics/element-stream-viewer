@@ -12,7 +12,7 @@ services:
           nocopy: true
     command: ./launch.sh
 
-  inspect:
+  stream-viewer:
     build:
       context: .
       dockerfile: Dockerfile

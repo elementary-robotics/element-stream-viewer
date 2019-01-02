@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 inspect/run.py
+python3 run.py

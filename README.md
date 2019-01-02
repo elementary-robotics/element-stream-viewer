@@ -1,8 +1,8 @@
 ### Overview
-The inspect element is a GUI tool used for viewing image data that is written to a stream. 
+The stream-viewer element is a GUI tool used for viewing image data that is written to a stream. 
 It works with the realsense element's color and depth streams and is a useful tool for testing and debugging computer vision algorithms. 
 
-![Inspect screenshot](assets/inspect_screenshot.png)
+![Inspect screenshot](assets/stream_viewer_screenshot.png)
 
 
 ### Usage
@@ -18,7 +18,7 @@ Start this element in conjunction with the realsense element.
 
 
 ### Usage with your own image streams
-Currently, inspect will list all available streams in the atom system, but can only view streams with data of a specific format. Specifically, this element expects a tif encoded image written to a stream with the key to the image as `data`
+Currently, stream-viewer will list all available streams in the atom system, but can only view streams with data of a specific format. Specifically, this element expects a tif encoded image written to a stream with the key to the image as `data`
 This can be done in Python as follows
 ```
 _, tif_img = cv2.imencode(".tif", img)
