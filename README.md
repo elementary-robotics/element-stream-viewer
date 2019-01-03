@@ -6,6 +6,28 @@ It works with the realsense element's color and depth streams and is a useful to
 
 ![Inspect screenshot](assets/stream_viewer_screenshot.png)
 
+### docker-compose configuration
+This element requires special flags to enable display forwarding.
+```
+  stream-viewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: volume
+        source: shared
+        target: /shared
+        volume:
+          nocopy: true
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    environment:
+      - "DISPLAY"
+      - "QT_X11_NO_MITSHM=1"  
+    depends_on:
+- "nucleus"
+```
+
+
 ### Usage
 Since this element utilizes a GUI, we need to forward the display between Docker and the host machine.
 This command will allow the root user in the container to have access to the X Server. Run this command on the host machine.
