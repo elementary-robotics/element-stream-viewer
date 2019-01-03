@@ -24,7 +24,7 @@ This element requires special flags to enable display forwarding.
       - "DISPLAY"
       - "QT_X11_NO_MITSHM=1"  
     depends_on:
-- "nucleus"
+      - "nucleus"
 ```
 
 
