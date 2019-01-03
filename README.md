@@ -1,9 +1,10 @@
+## stream-viewer
+
 ### Overview
 The stream-viewer element is a GUI tool used for viewing image data that is written to a stream. 
 It works with the realsense element's color and depth streams and is a useful tool for testing and debugging computer vision algorithms. 
 
 ![Inspect screenshot](assets/stream_viewer_screenshot.png)
-
 
 ### Usage
 Since this element utilizes a GUI, we need to forward the display between Docker and the host machine.
@@ -12,6 +13,7 @@ This command will allow the root user in the container to have access to the X S
 xhost +SI:localuser:root
 ```
 Then start the element following the usual steps.
+
 
 ### Usage with realsense element
 Start this element in conjunction with the realsense element.
