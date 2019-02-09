@@ -9,7 +9,7 @@ It works with the realsense element's color and depth streams and is a useful to
 ### docker-compose configuration
 This element requires special flags to enable display forwarding.
 
-```
+```yaml
   stream-viewer:
     build:
       context: .
@@ -33,7 +33,7 @@ This element requires special flags to enable display forwarding.
 Since this element utilizes a GUI, we need to forward the display between Docker and the host machine.
 This command will allow the root user in the container to have access to the X Server. Run this command on the host machine.
 
-```
+```shell
 xhost +SI:localuser:root
 ```
 
@@ -48,7 +48,7 @@ Start this element in conjunction with the realsense element.
 Currently, stream-viewer will list all available streams in the atom system, but can only view streams with data of a specific format. Specifically, this element expects a tif encoded image written to a stream with the key to the image as `data`
 This can be done in Python as follows
 
-```
+```python
 _, tif_img = cv2.imencode(".tif", img)
 element.entry_write("img", {"data": tif_img.tobytes()}, maxlen=30)
 ```
