@@ -11,9 +11,7 @@ This element requires special flags to enable display forwarding.
 
 ```yaml
   stream-viewer:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image:elementaryrobotics/element-stream-viewer
     volumes:
       - type: volume
         source: shared
