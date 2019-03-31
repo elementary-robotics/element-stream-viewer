@@ -1,8 +1,12 @@
 ## stream-viewer
 
+### Build Status
+
+[![CircleCI](https://circleci.com/gh/elementary-robotics/element-stream-viewer.svg?style=svg&circle-token=610bb3954b6e24ce2efe414dc90fb79d653abdde)](https://circleci.com/gh/elementary-robotics/element-stream-viewer)
+
 ### Overview
-The stream-viewer element is a GUI tool used for viewing image data that is written to a stream. 
-It works with the realsense element's color and depth streams and is a useful tool for testing and debugging computer vision algorithms. 
+The stream-viewer element is a GUI tool used for viewing image data that is written to a stream.
+It works with the realsense element's color and depth streams and is a useful tool for testing and debugging computer vision algorithms.
 
 ![Inspect screenshot](assets/stream_viewer_screenshot.png)
 
@@ -21,7 +25,7 @@ This element requires special flags to enable display forwarding.
       - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
     environment:
       - "DISPLAY"
-      - "QT_X11_NO_MITSHM=1"  
+      - "QT_X11_NO_MITSHM=1"
     depends_on:
       - "nucleus"
 ```
