@@ -7,8 +7,8 @@ It works with the realsense element's color and depth streams and is a useful to
 ![Inspect screenshot](assets/stream_viewer_screenshot.png)
 
 ### docker-compose configuration
-This element requires special flags to enable display forwarding.
-
+In order to save images from stream-viewer, you must mount your local ~/Pictures directory to /Pictures.
+This element also requires special flags to enable display forwarding.
 ```
   stream-viewer:
     build:
@@ -20,6 +20,7 @@ This element requires special flags to enable display forwarding.
         target: /shared
         volume:
           nocopy: true
+      - "~/Pictures:/Pictures"
       - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
     environment:
       - "DISPLAY"

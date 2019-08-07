@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
+import os
 import sys
 import time
 from atom import Element
 from atom.messages import LogLevel
-from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QLabel, QMainWindow, QToolBar
+from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QLabel, QMainWindow, QToolBar, QPushButton, QSizePolicy
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImage
 from qimage2ndarray import array2qimage
@@ -19,6 +20,7 @@ class StreamThread(QThread):
     change_pixmap = pyqtSignal(QImage)
     max_size = 8192
     hz = 30
+    img = None
 
     def run(self):
         """
@@ -40,15 +42,15 @@ class StreamThread(QThread):
                             element.log(LogLevel.ERR, error_msg)
                             raise Exception(error_msg)
                     if len(img.shape) == 3:
-                        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                        self.img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     if img.dtype != np.uint8:
-                        img = (img / img.max() * 255).astype(np.uint8)
+                        self.img = (img / img.max() * 255).astype(np.uint8)
                 except Exception as e:
                     element.log(LogLevel.ERR, str(e))
-                    img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
+                    self.img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
             else:
-                img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
-            qimg = array2qimage(img)
+                self.img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
+            qimg = array2qimage(self.img)
             self.change_pixmap.emit(qimg)
             time.sleep(max(1 / self.hz - (time.time() - last_set), 0))
             last_set = time.time()
@@ -65,7 +67,6 @@ class ComboBoxThread(QThread):
         while True:
             self.update_streams.emit()
             time.sleep(1 / self.hz)
-
 
 class Inspect(QMainWindow):
 
@@ -95,10 +96,18 @@ class Inspect(QMainWindow):
         self.stream_selector.currentIndexChanged.connect(self.select_stream)
         toolbar.addWidget(self.stream_selector)
 
+        # Create save image button
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.save_image)
+        spacer = QWidget(self)
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        toolbar.addWidget(spacer)
+        toolbar.addWidget(self.save_button)
+
         # Creates the stream thread that will get data from Atom and send it here
-        stream_thread = StreamThread(self)
-        stream_thread.change_pixmap.connect(self.set_img)
-        stream_thread.start()
+        self.stream_thread = StreamThread(self)
+        self.stream_thread.change_pixmap.connect(self.set_img)
+        self.stream_thread.start()
 
         # Creates the combo box thread that will notify this window of when to reupdate the stream list
         cb_thread = ComboBoxThread(self)
@@ -106,6 +115,14 @@ class Inspect(QMainWindow):
         cb_thread.start()
 
         self.show()
+
+    def save_image(self):
+        """
+        Saves currently viewed frame to disk.
+        """
+        fname = time.strftime("%Y%m%d_%H%M%S.png")
+        cv2.imwrite(os.path.join("/Pictures", fname), self.stream_thread.img[..., ::-1])
+        element.log(LogLevel.INFO, f"Saving image as {fname}")
 
     def select_stream(self, i):
         """
