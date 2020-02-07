@@ -1,7 +1,7 @@
 FROM elementaryrobotics/atom:v1.0.1
 
 RUN apt update
-RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata libopencv-dev
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
 
 ADD . /code
 
