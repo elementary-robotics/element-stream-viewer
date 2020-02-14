@@ -1,5 +1,5 @@
 numpy
 opencv-python==3.4.3.18
-PyQt5==5.11.3
-PyQt5-sip==4.19.13
-qimage2ndarray==1.7
+PyQt5==5.14.1
+PyQt5-sip==12.7.1
+qimage2ndarray==1.8.2
