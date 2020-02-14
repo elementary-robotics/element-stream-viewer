@@ -28,14 +28,19 @@ class StreamThread(QThread):
         """
         global stream
         last_set = time.time()
+        is_array = False #    default, can be overriden by stream
         while True:
             if stream:
                 _, element_name, stream_name = stream.split(":")
                 data = element.entry_read_n(element_name, stream_name, 1)
                 try:
                     # Format binary data to be an image readable by pyqt
-                    data = data[0]["data"]
-                    img = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), -1)
+                    if "is_array" in data[0]:
+                        is_array = bool(int(data[0]["is_array"]))
+                    if not is_array:
+                        img = cv2.imdecode(np.frombuffer(data[0]["data"], dtype=np.uint8), -1)
+                    else:
+                        img = data[0]["data"]
                     for size in img.shape:
                         if size > self.max_size:
                             error_msg = "Selected stream has image too large to display!"
