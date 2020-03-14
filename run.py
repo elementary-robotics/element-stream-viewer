@@ -30,7 +30,7 @@ class StreamThread(QThread):
         last_set = time.time()
         is_array = False #    default, can be overriden by stream
         #    tracks whether streaming was active in the last iteration of the while loop below
-        was_streaming = False
+        was_streaming = True #  Initialize to True so that the logo gets rendered at start
         last_element_name = None
         last_stream_name = None
 
