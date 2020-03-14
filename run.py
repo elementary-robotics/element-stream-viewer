@@ -29,10 +29,33 @@ class StreamThread(QThread):
         global stream
         last_set = time.time()
         is_array = False #    default, can be overriden by stream
+        #    tracks whether streaming was active in the last iteration of the while loop below
+        was_streaming = True #  Initialize to True so that the logo gets rendered at start
+        last_element_name = None
+        last_stream_name = None
+
         while True:
             if stream:
                 _, element_name, stream_name = stream.split(":")
-                data = element.entry_read_n(element_name, stream_name, 1)
+                if element_name != last_element_name or stream_name != last_stream_name:
+                    was_streaming = False
+                    last_element_name = element_name
+                    last_stream_name = stream_name
+                if not was_streaming: #    ensure we render the most recent frame
+                    data = element.entry_read_n(element_name, stream_name, 1)
+                    was_streaming = True
+                else: #    block and render the next new frame
+                    data = element.entry_read_since(
+                        element_name,
+                        stream_name,
+                        last_id="$",
+                        n=1,
+                        block=int(1/self.hz * 1000),
+                        serialization=None,
+                        force_serialization=False,
+                    )
+                if len(data) == 0: #    if stream is empty or wasn't updated in time
+                    continue
                 try:
                     # Format binary data to be an image readable by pyqt
                     if "is_array" in data[0]:
@@ -53,10 +76,16 @@ class StreamThread(QThread):
                 except Exception as e:
                     element.log(LogLevel.ERR, str(e))
                     self.img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
-            else:
+                qimg = array2qimage(self.img)
+                self.change_pixmap.emit(qimg)
+            elif was_streaming: #   if transitioned from streaming to not streaming
                 self.img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
-            qimg = array2qimage(self.img)
-            self.change_pixmap.emit(qimg)
+                qimg = array2qimage(self.img)
+                self.change_pixmap.emit(qimg)
+                was_streaming = False
+                last_element_name = None
+                last_stream_name = None
+            #   throttle the rendering rate
             time.sleep(max(1 / self.hz - (time.time() - last_set), 0))
             last_set = time.time()
 
