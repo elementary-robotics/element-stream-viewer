@@ -15,7 +15,7 @@ parameters:
     default: elementaryrobotics/element-stream-viewer
 
 orbs:
-  atom: elementaryrobotics/atom@0.1.6
+  atom: elementaryrobotics/atom@0.1.7
 
 workflows:
   version: 2
@@ -34,7 +34,6 @@ workflows:
           cache_tag: cache
           build_args: >-
             --build-arg ATOM_IMAGE=<< pipeline.parameters.atom_repo >>:<< pipeline.parameters.atom_version >>-<< pipeline.parameters.atom_variant >>-<< matrix.platform >>
-            --build-arg ARCH=<< matrix.platform >>
           filters:
             tags:
               only: /.*/
