@@ -23,7 +23,7 @@ workflows:
     jobs:
 
       # Build for intel
-      - atom/build_buildx:
+      - atom/build_buildx_large:
           name: "build-<< matrix.platform >>"
           matrix:
             parameters:
