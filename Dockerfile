@@ -1,8 +1,18 @@
-FROM elementaryrobotics/atom-opengl:v1.2.2
+ARG ATOM_IMAGE=elementaryrobotics/atom:v1.5.0-opencv-amd64
 
-# libxkbcommon-x11 needed for latest PyQt5
-RUN apt update \
-    && apt install -y --no-install-recommends tzdata libxkbcommon-x11-0
+FROM ${ATOM_IMAGE}
+
+RUN apt-get update && apt-get install -y \
+  --no-install-recommends \
+  libglvnd0 \
+  libgl1 \
+  libglx0 \
+  libegl1 \
+  libgles2 \
+  tzdata \
+  libxkbcommon-x11-0 \
+  libglib2.0-0 \
+  qt5-default
 
 #
 # Install python dependencies
