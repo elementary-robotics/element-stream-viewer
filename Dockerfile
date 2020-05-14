@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
   libxkbcommon-x11-0 \
   libglib2.0-0 \
   qt5-default \
-  build-essential
+  build-essential \
+  python3-dev
 
 #
 # Install python dependencies
@@ -22,7 +23,7 @@ RUN apt-get update && apt-get install -y \
 ADD ./requirements.txt /code/requirements.txt
 
 # Upgrade pip for latest PyQt5
-RUN pip3 install --upgrade pip && pip3 install wheel && \
+RUN pip3 install --upgrade pip && pip3 install wheel \
     && pip3 install --no-cache-dir -r /code/requirements.txt
 
 ADD . /code
