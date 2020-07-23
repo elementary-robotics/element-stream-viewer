@@ -48,18 +48,18 @@ Start this element in conjunction with the realsense element.
 
 
 ### Usage with your own image streams
-Currently, stream-viewer will list all available streams in the atom system, but can only view streams with data of a specific format. Specifically, by default this element expects binary data in a standard image format (any format supported by OpenCV's `imencode`/`imdecode` such as .tif, .jpeg, .png) under the "data" key in each stream entry.  However it is recommended to instead write the image data to the stream as an arrow-serialized array (2D array for black-and-white, 3D for color). Arrow arrays are faster and more memory-efficient than standard image formats.  If the stream entry contains array data then it should be written with `serializaton="arrow"` and the entry should include the "is_array" key with a value of 1 to indicate to `stream-viewer` the image format.
+Currently, stream-viewer will list all available streams in the atom system, but can only view streams with data of a specific format. Specifically, by default this element expects binary data in a standard image format (any format supported by OpenCV's `imencode`/`imdecode` such as .tif, .jpeg, .png) under the "data" key in each stream entry.  However it is recommended to instead write the image data to the stream as an arrow-serialized array (2D array for black-and-white, 3D for color). Arrow arrays are faster and more memory-efficient than standard image formats.  Instead of encoding images, simply pass a numpy array under the "data" key to `entry_write` with `serializaton="arrow", and `stream-viewer` will correctly display the image.
 
 This can be done in Python as follows
 
 ```python
 #  Write an arrow-encoded entry to the "image" stream so that it can be displayed by stream-viewer
 #  (img is a numpy array)
-element.entry_write("image", {"data": img, "is_array":1}, maxlen=30, serialization="arrow")
+element.entry_write("image", {"data": img}, maxlen=30, serialization="arrow")
 
 #  Write a tif-encoded entry so that can be displayed by stream-viewer
 _, tif_img = cv2.imencode(".tif", img)
-element.entry_write("image", {"data": tif_img.tobytes(), "is_array":0}, maxlen=30, serialization=None)
+element.entry_write("image", {"data": tif_img.tobytes()}, maxlen=30, serialization=None)
 ```
 
 ### Development

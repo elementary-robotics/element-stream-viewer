@@ -28,9 +28,8 @@ class StreamThread(QThread):
         """
         global stream
         last_set = time.time()
-        is_array = False #    default, can be overriden by stream
-        #    tracks whether streaming was active in the last iteration of the while loop below
-        was_streaming = True #  Initialize to True so that the logo gets rendered at start
+        # tracks whether streaming was active in the last iteration of the while loop below
+        was_streaming = True # Initialize to True so that the logo gets rendered at start
         last_element_name = None
         last_stream_name = None
 
@@ -48,31 +47,37 @@ class StreamThread(QThread):
                     data = element.entry_read_since(
                         element_name,
                         stream_name,
-                        last_id="$",
+                        last_id=last_id,
                         n=1,
                         block=int(1/self.hz * 1000),
                         serialization=None,
                         force_serialization=False,
                     )
-                if len(data) == 0: #    if stream is empty or wasn't updated in time
+                if len(data) == 0: # if stream is empty or wasn't updated in time
+                    print(
+                        "Could not read an entry from element %s, stream %s, in the alotted time" %
+                        (element_name, stream_name)
+                    )
                     continue
                 try:
+                    last_id = data[-1]["id"]
                     # Format binary data to be an image readable by pyqt
-                    if "is_array" in data[0]:
-                        is_array = bool(int(data[0]["is_array"]))
-                    if not is_array:
-                        img = cv2.imdecode(np.frombuffer(data[0]["data"], dtype=np.uint8), -1)
-                    else:
-                        img = data[0]["data"]
-                    for size in img.shape:
+                    self.img = data[-1]["data"]
+                    if not isinstance(self.img, np.ndarray):
+                        self.img = cv2.imdecode(np.frombuffer(self.img, dtype=np.uint8), -1)
+                    elif len(self.img.shape) == 2:
+                        self.img = self.img.copy() # Since Arrow Numpy arrays are getting set read-only
+
+                    for size in self.img.shape:
                         if size > self.max_size:
                             error_msg = "Selected stream has image too large to display!"
                             element.log(LogLevel.ERR, error_msg)
                             raise Exception(error_msg)
-                    if len(img.shape) == 3:
-                        self.img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                    if img.dtype != np.uint8:
-                        self.img = (img / img.max() * 255).astype(np.uint8)
+
+                    if len(self.img.shape) == 3:
+                        self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
+                    if self.img.dtype != np.uint8:
+                        self.img = (self.img / self.img.max() * 255).astype(np.uint8)
                 except Exception as e:
                     element.log(LogLevel.ERR, str(e))
                     self.img = cv2.cvtColor(cv2.imread(LOGO_PATH, -1), cv2.COLOR_BGR2RGB)
