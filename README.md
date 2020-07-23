@@ -61,3 +61,18 @@ element.entry_write("image", {"data": img, "is_array":1}, maxlen=30, serializati
 _, tif_img = cv2.imencode(".tif", img)
 element.entry_write("image", {"data": tif_img.tobytes(), "is_array":0}, maxlen=30, serialization=None)
 ```
+
+### Development
+
+Example command to build an ARM image (assumes you've already set up the build environment by following the instructions in the Atom documentation):
+
+```
+docker buildx build \
+        --platform=linux/aarch64 \
+        --progress plain \
+        --load \
+        -f Dockerfile \
+        -t elementaryrobotics/element-stream-viewer:test-aarch64 \
+        --build-arg ATOM_IMAGE=elementaryrobotics/atom:v1.5.0-opencv-aarch64 \
+        .
+```
