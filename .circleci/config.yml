@@ -1,5 +1,8 @@
 version: 2.1
 
+aliases:
+  - &platforms [ amd64 ]
+
 parameters:
   atom_repo:
     type: string
@@ -27,7 +30,7 @@ workflows:
           name: "build-<< matrix.platform >>"
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           image_name: << pipeline.parameters.dockerhub_repo >>
           image_tag: build-<< pipeline.number >>
           cache_repo: << pipeline.parameters.dockerhub_repo >>
@@ -43,7 +46,7 @@ workflows:
           name: "test-<< matrix.platform >>"
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           test_image: << pipeline.parameters.dockerhub_repo >>
           test_tag: build-<< pipeline.number >>
           atom_version: << pipeline.parameters.atom_version >>
@@ -77,7 +80,7 @@ workflows:
           target_tag: development-<< pipeline.number >>
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           requires:
             - build-<< matrix.platform >>
           filters:
@@ -94,7 +97,7 @@ workflows:
           target_tag: master-<< pipeline.number >>
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           requires:
             - build-<< matrix.platform >>
           filters:
@@ -111,7 +114,7 @@ workflows:
           target_tag: ""
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           requires:
             - build-<< matrix.platform >>
           filters:
@@ -128,7 +131,7 @@ workflows:
           target_tag: ${CIRCLE_TAG}
           matrix:
             parameters:
-              platform: [ amd64, aarch64 ]
+              platform: *platforms
           requires:
             - build-<< matrix.platform >>
           filters:
