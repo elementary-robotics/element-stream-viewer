@@ -44,15 +44,9 @@ class StreamThread(QThread):
                     data = element.entry_read_n(element_name, stream_name, 1)
                     was_streaming = True
                 else: #    block and render the next new frame
-                    data = element.entry_read_since(
-                        element_name,
-                        stream_name,
-                        last_id=last_id,
-                        n=1,
-                        block=int(1/self.hz * 1000),
-                        serialization=None,
-                        force_serialization=False,
-                    )
+                    data = element.entry_read_n(element_name, stream_name, 1)
+                    was_streaming = True
+
                 if len(data) == 0: # if stream is empty or wasn't updated in time
                     print(
                         "Could not read an entry from element %s, stream %s, in the alotted time" %
@@ -160,8 +154,15 @@ class Inspect(QMainWindow):
         Saves currently viewed frame to disk.
         """
         fname = time.strftime("%Y%m%d_%H%M%S.png")
-        cv2.imwrite(os.path.join("/Pictures", fname), self.stream_thread.img[..., ::-1])
-        element.log(LogLevel.INFO, f"Saving image as {fname}")
+        img_data = element.entry_read_n("basler", "image", 1)
+        try:
+            img_data = img_data[0]["data"]
+        except IndexError or KeyError:
+            raise Exception("Could not get data. Is the basler element running?")
+
+        img = cv2.imdecode(np.frombuffer(img_data, dtype=np.uint8), -1)
+        cv2.imwrite(os.path.join("/Pictures", fname), img)
+
 
     def select_stream(self, i):
         """
