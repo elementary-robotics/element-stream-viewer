@@ -62,10 +62,12 @@ class StreamThread(QThread):
                 try:
                     last_id = data[-1]["id"]
                     # Format binary data to be an image readable by pyqt
-                    self.img = data[-1]["data"]
-                    if not isinstance(self.img, np.ndarray):
+                    if isinstance(self.img, np.ndarray):
+                        # verify if the image is valid, before assigning to self.img
+                        self.img = data[-1]["data"]
+                    elif not isinstance(self.img, np.ndarray):
                         self.img = cv2.imdecode(np.frombuffer(self.img, dtype=np.uint8), -1)
-                    elif len(self.img.shape) == 2:
+                    if len(self.img.shape) == 2:
                         self.img = self.img.copy() # Since Arrow Numpy arrays are getting set read-only
 
                     for size in self.img.shape:
