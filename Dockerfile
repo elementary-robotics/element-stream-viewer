@@ -22,4 +22,4 @@ ADD . /code
 WORKDIR /code
 
 # Finally, specify the command we should run when the app is launched
-CMD ["/bin/bash", "launch.sh"]
+CMD ["/usr/local/bin/wait_for_nucleus.sh", "/bin/bash", "launch.sh"]
