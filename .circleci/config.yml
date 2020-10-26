@@ -9,7 +9,7 @@ parameters:
     default: elementaryrobotics/atom
   atom_version:
     type: string
-    default: v2.0.2
+    default: v2.0.4
   atom_variant:
     type: string
     default: opencv

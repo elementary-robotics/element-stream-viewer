@@ -1,4 +1,4 @@
-ARG ATOM_IMAGE=elementaryrobotics/atom:v2.0.2-opencv-amd64
+ARG ATOM_IMAGE=elementaryrobotics/atom:v2.0.4-opencv-amd64
 
 FROM ${ATOM_IMAGE}
 RUN apt update && apt install -y --no-install-recommends \
