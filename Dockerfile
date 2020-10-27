@@ -1,4 +1,4 @@
-ARG ATOM_IMAGE=elementaryrobotics/atom:v1.7.0-opencv-amd64
+ARG ATOM_IMAGE=elementaryrobotics/atom:v2.0.4-opencv-amd64
 
 FROM ${ATOM_IMAGE}
 RUN apt update && apt install -y --no-install-recommends \
@@ -22,4 +22,4 @@ ADD . /code
 WORKDIR /code
 
 # Finally, specify the command we should run when the app is launched
-CMD ["/bin/bash", "launch.sh"]
+CMD ["/usr/local/bin/wait_for_nucleus.sh", "/bin/bash", "launch.sh"]
